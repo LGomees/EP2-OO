@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -33,7 +35,7 @@ public class Map extends JPanel implements ActionListener {
         this.background = image.getImage();
 
         spaceship = new Spaceship(SPACESHIP_X, SPACESHIP_Y);
-
+   
         timer_map = new Timer(Game.getDelay(), this);
         timer_map.start();
                             
@@ -54,17 +56,26 @@ public class Map extends JPanel implements ActionListener {
                
         // Draw spaceship
         g.drawImage(spaceship.getImage(), spaceship.getX(), spaceship.getY(), this);
+        
+        List<Bullet> firedBullet = spaceship.getFiredBullet();
+        
+        for(int i = 0; i < firedBullet.size(); i++){
+        	
+        	Bullet b = (Bullet) firedBullet.get(i);
+        	g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+        }
     }
     
     @Override
     public void actionPerformed(ActionEvent e) {
        
         updateSpaceship();
+        updateBullet();
        
         repaint();
     }
     
-    private void dranMissionAccomplished(Graphics g) {
+    private void drawMissionAccomplished(Graphics g) {
 
         String message = "MISSION ACCOMPLISHED";
         Font font = new Font("Helvetica", Font.BOLD, 14);
@@ -88,6 +99,22 @@ public class Map extends JPanel implements ActionListener {
     
     private void updateSpaceship() {
         spaceship.move();
+    }
+    
+    private void updateBullet(){
+    	
+    	List<Bullet> firedBullet = spaceship.getFiredBullet();
+        
+        for(int i = 0; i < firedBullet.size(); i++){
+        	
+        	Bullet b = (Bullet) firedBullet.get(i);
+        	if(b.isVisible()){
+        		b.movementBullet();
+        	}
+        	else{
+        		firedBullet.remove(i);
+        	}
+        }
     }
   
 
