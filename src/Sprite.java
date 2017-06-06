@@ -12,6 +12,7 @@ public abstract class Sprite {
     protected int height;
     protected boolean visible;
     protected Image image;
+ 
 
     public Sprite(int x, int y) {
 

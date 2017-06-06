@@ -7,11 +7,12 @@ import java.util.List;
 public class Spaceship extends Sprite {
     
     private static final int MAX_SPEED_X = 2;
-    private static  final int MAX_SPEED_Y = 1;
+    private static final int MAX_SPEED_Y = 1;
     
    
     private int speed_x;
     private int speed_y;
+    
     
     
     public Spaceship(int x, int y) {
@@ -39,15 +40,14 @@ public class Spaceship extends Sprite {
     
     public void shooting(){
     	
-    	this.firedBullet.add(new Bullet(x + width/2, y + height/2));
+    	this.firedBullet.add(new Bullet(this.x + width/2, this.y + height/2));
     }
     
     public List<Bullet> getFiredBullet() {
 		return firedBullet;
 	}
-    public void setSpeed_X(int speed_x){
-    	this.speed_x = speed_x;
-    }
+    
+    
     public void move() {
         
         // Limits the movement of the spaceship to the side edges.
@@ -75,13 +75,13 @@ public class Spaceship extends Sprite {
         // Set speed to move to the left
         if (key == KeyEvent.VK_LEFT) { 
             speed_x = -1 * MAX_SPEED_X;
-            setSpeed_X(speed_x);
+            
         }
 
         // Set speed to move to the right
         if (key == KeyEvent.VK_RIGHT) {
             speed_x = MAX_SPEED_X;
-            setSpeed_X(speed_x);
+            
         }
         
         // Set speed to move to up and set thrust effect
