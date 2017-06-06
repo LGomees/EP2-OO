@@ -1,7 +1,7 @@
 import java.util.Optional;
 
 public enum Level {
-	EASY(6000, 10, "images/alien_EASY.png"), 
+	EASY(6000, 10, "images/alien_EASY.png"),
 	MEDIUM(6000, 25, "images/alien_MEDIUM.png"), 
 	HARD(6000, 50, "images/alien_HARD.png");
 	
@@ -11,7 +11,7 @@ public enum Level {
 	
 	Level(int time, int qtt, String img) {
 		this.time = time;
-		this.qtt =qtt;
+		this.qtt = qtt;
 		this.image = img;
 	}
 	

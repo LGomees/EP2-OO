@@ -10,7 +10,6 @@ public class Alien extends Sprite {
     
 	public static final int SPEED_ALIEN = 1;
 	
-	public boolean isExplosion;
 	
 	public Alien(int x, int y, String image) {
 		super(x,y);
@@ -19,21 +18,11 @@ public class Alien extends Sprite {
 		visible = true;
 		
 	}
-	public void explosion(){
-		loadImage("image/explosion.png");
-		isExplosion = true;
-	}
-	
-	
 	
 	public void movementAlien(){
 		
-		/*if(this.y < 0){
-			this.y = Game.getHeight();
-		}
-		else*/ {
-			this.y += SPEED_ALIEN;
-		}
+		this.y += SPEED_ALIEN;
+		
 		
     	if((y + width >= Game.getHeight())){
     		visible = false;  

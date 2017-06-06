@@ -94,6 +94,7 @@ public class Map extends JPanel implements ActionListener {
 		
 		g.setColor(Color.WHITE);
 		g.drawString("LIFE: " + spaceship.getLife(), 5, 15);
+		g.drawString(("SCORE: " + spaceship.getScore()), 5, 490);
 
 		
 	}
@@ -123,12 +124,14 @@ public class Map extends JPanel implements ActionListener {
 	private void drawGameOver(Graphics g) {
 
 		String message = "Game Over";
+		String message2 = "SCORE: ";
 		Font font = new Font("Helvetica", Font.BOLD, 14);
 		FontMetrics metric = getFontMetrics(font);
 
 		g.setColor(Color.white);
 		g.setFont(font);
 		g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
+		g.drawString(message2 + spaceship.getScore(), ((Game.getWidth() - metric.stringWidth(message)) / 2), (Game.getHeight() / 2) + 40);
 	}
 	
 	
@@ -148,11 +151,12 @@ public class Map extends JPanel implements ActionListener {
 		timer_aliens.start();
 
 	}
+	
 
 	public void nextLevel() {
 		Optional<Level> next = level.next();
 		if (!next.isPresent()) {
-			System.out.println("SEM MAIS NIVEIS");
+			System.out.println("SEM MAIS NÍVEIS");
 			return;
 		}
 		level = next.get();
@@ -171,7 +175,7 @@ public class Map extends JPanel implements ActionListener {
 
 			if (recSpaceship.intersects(recAlien)) {
 
-				if (spaceship.getLife() == 0) {
+				if (spaceship.getLife() == 1) {
 					isAlive = false;
 				} else {
 					spaceship.setLife(spaceship.getLife() - 1);
@@ -193,7 +197,8 @@ public class Map extends JPanel implements ActionListener {
 				recAlien = tempAlien.getBounds();
 
 				if (recBullet.intersects(recAlien)) {					
-										
+					
+					spaceship.setScore(spaceship.getScore() + 100);
 					tempAlien.setVisible(false);
 					tempBullet.setVisible(false);
 					
@@ -215,6 +220,7 @@ public class Map extends JPanel implements ActionListener {
 			aliens.add(new Alien(nx, ny, level.getImage()));
 		}
 	}
+	
 
 	private void updateSpaceship() {
 		spaceship.move();
@@ -246,12 +252,11 @@ public class Map extends JPanel implements ActionListener {
 			} else {
 				aliens.remove(i);
 			}
-			if(a.isExplosion){
-				a.setVisible(false);
-			}
+			
 		}
 
 	}
+	
 
 	private class KeyListerner extends KeyAdapter {
 

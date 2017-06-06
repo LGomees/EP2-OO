@@ -13,6 +13,8 @@ public class Spaceship extends Sprite {
     private int speed_x;
     private int speed_y;
     private int life = 3;
+    private int score;
+    
     
     
     
@@ -44,6 +46,14 @@ public class Spaceship extends Sprite {
     public void setLife(int life){
 		this.life = life;
 	}
+    
+    public int getScore(){
+    	return score;
+    }
+    
+    public void setScore(int score){
+    	this.score = score;
+    }
     
     
     
