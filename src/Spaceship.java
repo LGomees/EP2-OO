@@ -12,6 +12,7 @@ public class Spaceship extends Sprite {
    
     private int speed_x;
     private int speed_y;
+    private int life = 3;
     
     
     
@@ -35,6 +36,16 @@ public class Spaceship extends Sprite {
     private void thrust(){
         loadImage("images/spaceship_thrust.png"); 
     }    
+    
+    public int getLife(){
+    	return life;
+    }
+    
+    public void setLife(int life){
+		this.life = life;
+	}
+    
+    
     
     private List<Bullet> firedBullet = new ArrayList<Bullet>();
     

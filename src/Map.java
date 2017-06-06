@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +12,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
@@ -29,6 +31,9 @@ public class Map extends JPanel implements ActionListener {
 	private boolean isAlive;
 
 	private List<Alien> aliens;
+	private Timer timer_aliens;
+
+	private Level level = Level.EASY;
 
 	public Map() {
 
@@ -41,7 +46,8 @@ public class Map extends JPanel implements ActionListener {
 		this.background = image.getImage();
 
 		spaceship = new Spaceship(SPACESHIP_X, SPACESHIP_Y);
-		
+
+		isAlive = true;
 		startAliens();
 
 		timer_map = new Timer(Game.getDelay(), this);
@@ -55,7 +61,12 @@ public class Map extends JPanel implements ActionListener {
 
 		g.drawImage(this.background, 0, 0, null);
 
-		draw(g);
+		if (isAlive) {
+			draw(g);
+		}
+		else{
+			drawGameOver(g);
+		}
 
 		Toolkit.getDefaultToolkit().sync();
 	}
@@ -64,7 +75,7 @@ public class Map extends JPanel implements ActionListener {
 
 		// Draw spaceship
 		g.drawImage(spaceship.getImage(), spaceship.getX(), spaceship.getY(), this);
-		
+
 		// Draw Bullet
 		List<Bullet> firedBullet = spaceship.getFiredBullet();
 
@@ -73,21 +84,28 @@ public class Map extends JPanel implements ActionListener {
 			Bullet b = (Bullet) firedBullet.get(i);
 			g.drawImage(b.getImage(), b.getX(), b.getY(), this);
 		}
-		
+
 		// Draw Alien
 		for (int i = 0; i < aliens.size(); i++) {
 
 			Alien a = aliens.get(i);
 			g.drawImage(a.getImage(), a.getX(), a.getY(), this);
 		}
+		
+		g.setColor(Color.WHITE);
+		g.drawString("LIFE: " + spaceship.getLife(), 5, 15);
+
+		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+		
+		checkColision();
 		updateSpaceship();
 		updateBullet();
 		updateAlien();
+	
 		repaint();
 	}
 
@@ -112,16 +130,89 @@ public class Map extends JPanel implements ActionListener {
 		g.setFont(font);
 		g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
 	}
-
+	
+	
+	
 	public void startAliens() {
 
 		aliens = new ArrayList<Alien>();
 
+		timer_aliens = new Timer(level.getTime(), new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				generateAliens();
+			}
+		});
+		timer_aliens.start();
+
+	}
+
+	public void nextLevel() {
+		Optional<Level> next = level.next();
+		if (!next.isPresent()) {
+			System.out.println("SEM MAIS NIVEIS");
+			return;
+		}
+		level = next.get();
+		timer_aliens.setDelay(level.getTime());
+	}
+
+	public void checkColision() {
+
+		Rectangle recSpaceship = spaceship.getBounds();
+		Rectangle recBullet;
+		Rectangle recAlien;
 
 		for (int i = 0; i < aliens.size(); i++) {
-			
-			int n = (int)(Math.random());
-			aliens.add(new Alien(n,0));
+			Alien tempAlien = aliens.get(i);
+			recAlien = tempAlien.getBounds();
+
+			if (recSpaceship.intersects(recAlien)) {
+
+				if (spaceship.getLife() == 0) {
+					isAlive = false;
+				} else {
+					spaceship.setLife(spaceship.getLife() - 1);
+					tempAlien.setVisible(false);
+				}
+			}
+		}
+
+		List<Bullet> firedBullet = spaceship.getFiredBullet();
+
+		for (int i = 0; i < firedBullet.size(); i++) {
+
+			Bullet tempBullet = firedBullet.get(i);
+			recBullet = tempBullet.getBounds();
+
+			for (int j = 0; j < aliens.size(); j++) {
+
+				Alien tempAlien = aliens.get(j);
+				recAlien = tempAlien.getBounds();
+
+				if (recBullet.intersects(recAlien)) {					
+										
+					tempAlien.setVisible(false);
+					tempBullet.setVisible(false);
+					
+				}
+			}
+		}
+	}
+	
+	
+
+	public void generateAliens() {
+		Random rnd = new Random();
+
+		for (int i = 0; i < level.getQtt(); i++) {
+
+			int nx = Math.abs(rnd.nextInt(Game.getWidth()));
+
+			int ny = -300 + Math.abs(rnd.nextInt(Game.getHeight()));
+			aliens.add(new Alien(nx, ny, level.getImage()));
 		}
 	}
 
@@ -146,7 +237,6 @@ public class Map extends JPanel implements ActionListener {
 
 	private void updateAlien() {
 
-
 		for (int i = 0; i < aliens.size(); i++) {
 
 			Alien a = (Alien) aliens.get(i);
@@ -155,6 +245,9 @@ public class Map extends JPanel implements ActionListener {
 				a.movementAlien();
 			} else {
 				aliens.remove(i);
+			}
+			if(a.isExplosion){
+				a.setVisible(false);
 			}
 		}
 
