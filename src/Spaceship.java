@@ -47,6 +47,8 @@ public class Spaceship extends Sprite {
 		this.life = life;
 	}
     
+    
+    
     public int getScore(){
     	return score;
     }

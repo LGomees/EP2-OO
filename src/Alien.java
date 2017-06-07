@@ -10,6 +10,7 @@ public class Alien extends Sprite {
     
 	public static final int SPEED_ALIEN = 1;
 	
+	public boolean isExplosion;
 	
 	public Alien(int x, int y, String image) {
 		super(x,y);
@@ -18,6 +19,11 @@ public class Alien extends Sprite {
 		visible = true;
 		
 	}
+	
+	public synchronized void explosion() {
+        loadImage("images/explosion.png");
+        isExplosion = true;
+    }
 	
 	public void movementAlien(){
 		
