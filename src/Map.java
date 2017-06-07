@@ -32,7 +32,9 @@ public class Map extends JPanel implements ActionListener {
 
 	private List<Alien> aliens;
 	private Timer timer_aliens;
-
+	private List<Bonus> bonus;
+    private Timer timer_bonus;
+    
 	private Level level = Level.EASY;
 
 	public Map() {
@@ -49,6 +51,7 @@ public class Map extends JPanel implements ActionListener {
 
 		isAlive = true;
 		startAliens();
+		startBonus();
 
 		timer_map = new Timer(Game.getDelay(), this);
 		timer_map.start();
@@ -92,6 +95,12 @@ public class Map extends JPanel implements ActionListener {
 			g.drawImage(a.getImage(), a.getX(), a.getY(), this);
 		}
 		
+		 // Draw Bonus
+        for(int i = 0; i < bonus.size(); i++) {
+            Bonus b = bonus.get(i);
+            g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+        }
+		
 		g.setColor(Color.WHITE);
 		g.drawString("LIFE: " + spaceship.getLife(), 5, 15);
 		g.drawString(("SCORE: " + spaceship.getScore()), 5, 490);
@@ -102,10 +111,11 @@ public class Map extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		checkColision();
 		updateSpaceship();
 		updateBullet();
 		updateAlien();
+		updateBonus();
+		checkColision();
 	
 		repaint();
 	}
@@ -134,40 +144,57 @@ public class Map extends JPanel implements ActionListener {
 		g.drawString(message2 + spaceship.getScore(), ((Game.getWidth() - metric.stringWidth(message)) / 2), (Game.getHeight() / 2) + 40);
 	}
 	
+	private void startBonus() {
+        bonus = new ArrayList<>();
+        timer_bonus = new Timer(level.getBonusTime(), new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                generateBonus();
+            }
+        });
+        timer_bonus.start();
+    }
+	
+	private void generateBonus() {
+        Random rnd = new Random();
+        for (int i = 0; i < level.getBonusCount(); i++) {
+            int nx = Math.abs(rnd.nextInt(Game.getWidth()));
+            int ny = -500 + Math.abs(rnd.nextInt(Game.getHeight()));
+            bonus.add(new Bonus(nx, ny, "images/bonus.png"));
+        }
+    }
 	
 	
 	public void startAliens() {
+        aliens = new ArrayList<Alien>();
+        timer_aliens = new Timer(level.getAlienTime(), new ActionListener() {
 
-		aliens = new ArrayList<Alien>();
-
-		timer_aliens = new Timer(level.getTime(), new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				generateAliens();
-			}
-		});
-		timer_aliens.start();
-
-	}
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                generateAliens();
+            }
+        });
+        timer_aliens.start();
+    }
 	
 
-	public void nextLevel() {
-		Optional<Level> next = level.next();
-		if (!next.isPresent()) {
-			System.out.println("SEM MAIS NÍVEIS");
-			return;
-		}
-		level = next.get();
-		timer_aliens.setDelay(level.getTime());
-	}
+	 public void nextLevel() {
+	        Optional<Level> next = level.next();
+	        if (!next.isPresent()) {
+	            System.out.println("SEM MAIS NIVEIS");
+	            return;
+	        }
+	        level = next.get();
+	        timer_aliens.setDelay(level.getAlienTime());
+	        timer_bonus.setDelay(level.getBonusTime());
+	  }
 
 	public void checkColision() {
 
 		Rectangle recSpaceship = spaceship.getBounds();
 		Rectangle recBullet;
 		Rectangle recAlien;
+		Rectangle recBonus;
 
 		for (int i = 0; i < aliens.size(); i++) {
 			Alien tempAlien = aliens.get(i);
@@ -180,7 +207,7 @@ public class Map extends JPanel implements ActionListener {
 				} else {
 					spaceship.setLife(spaceship.getLife() - 1);
 					tempAlien.setVisible(false);
-				}
+				  }
 			}
 		}
 
@@ -205,19 +232,51 @@ public class Map extends JPanel implements ActionListener {
 				}
 			}
 		}
-	}
+
+		for (int i = 0; i < firedBullet.size(); i++) {
+
+			Bullet tempBullet = firedBullet.get(i);
+			recBullet = tempBullet.getBounds();
+
+			for (int j = 0; j < bonus.size(); j++) {
+
+				Bonus tempBonus = bonus.get(j);
+				recBonus = tempBonus.getBounds();
+
+				if (recBullet.intersects(recBonus)) {					
+					
+					tempBonus.explosion();
+					tempBonus.setVisible(false);
+					tempBullet.setVisible(false);
+					
+				}
+			}
+		}
+		
+		for (int i = 0; i < bonus.size(); i++) {
+			Bonus tempBonus = bonus.get(i);
+			recBonus = tempBonus.getBounds();
+
+			if (recSpaceship.intersects(recBonus)) {
+
+				spaceship.setScore(spaceship.getScore() + 2000);
+					tempBonus.setVisible(false);
+				  }
+			}
+		}
 	
+		
 	
 
 	public void generateAliens() {
 		Random rnd = new Random();
 
-		for (int i = 0; i < level.getQtt(); i++) {
+		for (int i = 0; i < level.getAlienCount(); i++) {
 
 			int nx = Math.abs(rnd.nextInt(Game.getWidth()));
 
 			int ny = -300 + Math.abs(rnd.nextInt(Game.getHeight()));
-			aliens.add(new Alien(nx, ny, level.getImage()));
+			aliens.add(new Alien(nx, ny, level.getAlienImage()));
 		}
 	}
 	
@@ -256,6 +315,22 @@ public class Map extends JPanel implements ActionListener {
 		}
 
 	}
+	
+	private void updateBonus(){
+        for (int i = 0; i < bonus.size(); i++) {
+
+            Bonus a =  bonus.get(i);
+
+            if (a.isVisible()) {
+                a.movementBonus();
+            } else {
+                bonus.remove(i);
+            }
+            if (a.isExplosion) {
+                a.setVisible(false);
+            }
+        }
+    }
 	
 
 	private class KeyListerner extends KeyAdapter {
