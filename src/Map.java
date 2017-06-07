@@ -1,4 +1,5 @@
 
+import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Font;
@@ -26,9 +27,10 @@ public class Map extends JPanel implements ActionListener {
 	private final Timer timer_map;
 
 	private final Image background;
-	private final Spaceship spaceship;
+	private Spaceship spaceship;
 
 	private boolean isAlive;
+	private boolean isWinner;
 
 	private List<Alien> aliens;
 	private Timer timer_aliens;
@@ -48,12 +50,12 @@ public class Map extends JPanel implements ActionListener {
 		this.background = image.getImage();
 
 		spaceship = new Spaceship(SPACESHIP_X, SPACESHIP_Y);
-		
+
 		isAlive = true;
+		isWinner = false;
 
 		startAliens();
 		startBonus();
-		
 
 		timer_map = new Timer(Game.getDelay(), this);
 		timer_map.start();
@@ -66,10 +68,12 @@ public class Map extends JPanel implements ActionListener {
 
 		g.drawImage(this.background, 0, 0, null);
 
-		if (isAlive) {
+		if (isWinner) {
+			drawMissionAccomplished(g);
+		} else if (isAlive) {
 			draw(g);
 		} else {
-			drawGameOver(g);		
+			drawGameOver(g);
 		}
 
 		Toolkit.getDefaultToolkit().sync();
@@ -117,7 +121,6 @@ public class Map extends JPanel implements ActionListener {
 		updateBonus();
 		checkCollision();
 		Levelfinished();
-		
 
 		repaint();
 	}
@@ -125,26 +128,39 @@ public class Map extends JPanel implements ActionListener {
 	private void drawMissionAccomplished(Graphics g) {
 
 		String message = "MISSION ACCOMPLISHED";
+		String message2 = "YOU DID IT! ";
+		String message3 = "Press ENTER to play again";
 		Font font = new Font("Helvetica", Font.BOLD, 14);
 		FontMetrics metric = getFontMetrics(font);
 
 		g.setColor(Color.white);
 		g.setFont(font);
-		g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
+		g.drawString(message, ((Game.getWidth() - metric.stringWidth(message))) / 2, Game.getHeight() / 2);
+		g.drawString(message2, ((Game.getWidth() - metric.stringWidth(message2)) / 2), (Game.getHeight() / 2) + 40);
+		g.drawString(message3, ((Game.getWidth() - metric.stringWidth(message3)) /2), Game.getHeight() - 60); 
 	}
 
 	private void drawGameOver(Graphics g) {
 
 		String message = "Game Over";
 		String message2 = "SCORE: ";
+		String message3 = "Press ENTER to try again";
 		Font font = new Font("Helvetica", Font.BOLD, 14);
 		FontMetrics metric = getFontMetrics(font);
+		
+		updateAlien();
+		updateBullet();
+		updateBonus();
 
 		g.setColor(Color.white);
 		g.setFont(font);
 		g.drawString(message, (Game.getWidth() - metric.stringWidth(message)) / 2, Game.getHeight() / 2);
-		g.drawString(message2 + spaceship.getScore(), ((Game.getWidth() - metric.stringWidth(message)) / 2),
-				(Game.getHeight() / 2) + 40);
+		g.drawString(message2 + spaceship.getScore(), (((Game.getWidth() - metric.stringWidth(message2)) / 2) - 20), (Game.getHeight() / 2) + 40);
+		g.drawString(message3, ((Game.getWidth() - metric.stringWidth(message3)) /2), Game.getHeight() - 60);
+	}
+
+	public void newSpaceship() {
+		this.spaceship = new Spaceship(SPACESHIP_X, SPACESHIP_Y);
 	}
 
 	private void startBonus() {
@@ -166,12 +182,13 @@ public class Map extends JPanel implements ActionListener {
 			bonus.add(new Bonus(nx, ny, "images/bonus.png"));
 		}
 	}
-	
-	public void restartScore(){
+
+	public void restartScore() {
 		spaceship.setScore(0);
+		level = Level.EASY;
 	}
-	
-	public void restartLife(){
+
+	public void restartLife() {
 		spaceship.setLife(3);
 	}
 
@@ -187,24 +204,20 @@ public class Map extends JPanel implements ActionListener {
 		timer_aliens.start();
 	}
 
-	public void Levelfinished(){
-		if(spaceship.getScore() >= 5000 && spaceship.getScore() < 15000){
+	public void Levelfinished() {
+		if (level == Level.EASY && spaceship.getScore() >= 5000 && spaceship.getScore() < 15000) {
 			nextLevel();
 		}
-		if(spaceship.getScore() >= 15000 && spaceship.getScore() < 40000){
+		if (level == Level.MEDIUM && spaceship.getScore() >= 15000 && spaceship.getScore() < 40000) {
 			nextLevel();
 		}
-		if(spaceship.getScore() >= 40000){
-			nextLevel();
+		if (level == Level.HARD && spaceship.getScore() >= 40000) {
+			this.isWinner = true;
 		}
 	}
-	
+
 	public void nextLevel() {
 		Optional<Level> next = level.next();
-		if (!next.isPresent()) {
-			System.out.println("SEM MAIS NIVEIS");
-			return;
-		}
 		level = next.get();
 		timer_aliens.setDelay(level.getAlienTime());
 		timer_bonus.setDelay(level.getBonusTime());
@@ -356,22 +369,24 @@ public class Map extends JPanel implements ActionListener {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			
-			if(e.getKeyCode() == KeyEvent.VK_ENTER){
+
+			if (!isAlive && e.getKeyCode() == KeyEvent.VK_ENTER) {
 				isAlive = true;
-				Spaceship spaceship = new Spaceship(SPACESHIP_X,SPACESHIP_Y);
+				newSpaceship();
 				startAliens();
 				startBonus();
 				restartScore();
 				restartLife();
-				
+
 			}
-			spaceship.keyPressed(e);
+			if (isAlive)
+				spaceship.keyPressed(e);
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			spaceship.keyReleased(e);
+			if (isAlive)
+				spaceship.keyReleased(e);
 		}
 
 	}

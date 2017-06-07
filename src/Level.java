@@ -63,10 +63,12 @@ public enum Level {
 		case EASY:
 
 			return Optional.of(MEDIUM);
+			
 
 		case MEDIUM:
 
 			return Optional.of(HARD);
+			
 
 		default:
 
