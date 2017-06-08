@@ -132,6 +132,10 @@ public class Map extends JPanel implements ActionListener {
 		String message3 = "Press ENTER to play again";
 		Font font = new Font("Helvetica", Font.BOLD, 14);
 		FontMetrics metric = getFontMetrics(font);
+		
+		updateAlien();
+		updateBullet();
+		updateBonus();
 
 		g.setColor(Color.white);
 		g.setFont(font);

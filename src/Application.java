@@ -2,16 +2,18 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
-
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class Application extends JFrame {
 
 	public Application() {
-		
-		
+
 		add(new Map());
 
 		setSize(Game.getWidth(), Game.getHeight());
@@ -24,11 +26,13 @@ public class Application extends JFrame {
 
 	public static void main(String[] args) {
 
+		
+
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				Application app = new Application();
-				app.setVisible(true);
+				Menu menu = new Menu();
+				menu.showMenu();
 			}
 		});
 	}
