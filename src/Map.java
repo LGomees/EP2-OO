@@ -108,7 +108,7 @@ public class Map extends JPanel implements ActionListener {
 
 		g.setColor(Color.WHITE);
 		g.drawString("LIFE: " + spaceship.getLife(), 5, 15);
-		g.drawString("SCORE: " + spaceship.getScore(), 5, 490);
+		g.drawString("SCORE: " + spaceship.getScore(), 5, 30);
 
 	}
 
