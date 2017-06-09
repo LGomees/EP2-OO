@@ -108,7 +108,7 @@ public class Map extends JPanel implements ActionListener {
 
 		g.setColor(Color.WHITE);
 		g.drawString("LIFE: " + spaceship.getLife(), 5, 15);
-		g.drawString(("SCORE: " + spaceship.getScore()), 5, 490);
+		g.drawString("SCORE: " + spaceship.getScore(), 5, 490);
 
 	}
 
@@ -374,8 +374,9 @@ public class Map extends JPanel implements ActionListener {
 		@Override
 		public void keyPressed(KeyEvent e) {
 
-			if (!isAlive && e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if ((!isAlive && e.getKeyCode() == KeyEvent.VK_ENTER) || (isWinner && e.getKeyCode() == KeyEvent.VK_ENTER)) {
 				isAlive = true;
+				isWinner = false;
 				newSpaceship();
 				startAliens();
 				startBonus();
@@ -383,6 +384,7 @@ public class Map extends JPanel implements ActionListener {
 				restartLife();
 
 			}
+			
 			if (isAlive)
 				spaceship.keyPressed(e);
 		}

@@ -47,6 +47,14 @@ public class Spaceship extends Sprite {
 		this.life = life;
 	}
     
+    public int printLife(){
+    	getLife();
+    	for(int i = 0; i <= life; i++){
+			loadImage("images/explosion.png");
+		}
+    	return life;
+    }
+    
     
     
     public int getScore(){

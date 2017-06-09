@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -19,8 +20,9 @@ public class Menu extends JFrame {
 	private JLabel headerLabel;
 	private JPanel controlPanel;
 	
+	
 	public Menu() {
-		prepareGUI();	
+		prepareGUI();
 		
 	}
 
@@ -36,8 +38,7 @@ public class Menu extends JFrame {
 		headerLabel = new JLabel("", JLabel.CENTER);
 		optionsLabel = new JLabel("", JLabel.CENTER);
 
-		optionsLabel.setSize(Game.getWidth(), Game.getHeight());
-
+		
 		mainFrame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent) {
 				System.exit(0);
@@ -46,6 +47,7 @@ public class Menu extends JFrame {
 
 		controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
+		
 
 		mainFrame.add(headerLabel);
 		mainFrame.add(optionsLabel);
@@ -57,8 +59,11 @@ public class Menu extends JFrame {
 
 	public void showMenu() {
 
-		headerLabel.setText("PRESS START");
-
+		headerLabel.setText("Space Combat Game");
+		headerLabel.setForeground(Color.BLACK);
+		headerLabel.setBounds(Game.getWidth() / 2, Game.getHeight() + 100, 200, 50);
+		headerLabel.setBackground(Color.BLACK);
+		
 		JButton newGameButton = new JButton("New Game");
 		JButton creditsButton = new JButton("Credits");
 
@@ -69,7 +74,8 @@ public class Menu extends JFrame {
 		creditsButton.addActionListener(new ButtonClickListener());
 
 		controlPanel.add(newGameButton);
-		controlPanel.add(creditsButton);		
+		controlPanel.add(creditsButton);
+		controlPanel.setBackground(Color.BLACK);
 
 		setResizable(false);
 		setLocationRelativeTo(null);
