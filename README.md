@@ -1,4 +1,4 @@
------------------ Space Combat Game -----------------
+----------------------------------------------- Space Combat Game -----------------------------------------------------------
 
 
 Controles:
@@ -18,5 +18,11 @@ ALIEN - 100pts
 BONUS - 2000pts
 
 -----------------------------------------------------
+
+Observações:
+
+Para o funcionamento do Jogo, é necessário que a pasta de imagens esteja localizada junto com o arquivo executável.
+
+----------------------------------------------------
 
 JOGO DESENVOLVIDO POR LUCAS GOMES DE OLIVEIRA - 15/0137184
